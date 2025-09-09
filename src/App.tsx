@@ -7,6 +7,7 @@ import { AuthProvider } from "@/hooks/useAuth";
 import Navigation from "./components/Navigation";
 import Landing from "./pages/Landing";
 import Challenges from "./pages/Challenges";
+import ChallengeDetail from "./pages/ChallengeDetail";
 import Scores from "./pages/Scores";
 import Dashboard from "./pages/Dashboard";
 import SignIn from "./pages/SignIn";
@@ -26,6 +27,7 @@ const App = () => (
             <Routes>
               <Route path="/" element={<Landing />} />
               <Route path="/challenges" element={<Challenges />} />
+              <Route path="/challenges/:challengeId" element={<ChallengeDetail />} />
               <Route path="/scores" element={<Scores />} />
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/signin" element={<SignIn />} />

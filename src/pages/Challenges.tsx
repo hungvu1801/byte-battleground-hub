@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -6,6 +7,7 @@ import { Progress } from "@/components/ui/progress";
 import { Timer, Star, Lock, CheckCircle, Zap, Brain, Rocket } from "lucide-react";
 
 const Challenges = () => {
+  const navigate = useNavigate();
   const [completedChallenges, setCompletedChallenges] = useState<string[]>([]);
 
   const challengeSections = [
@@ -95,10 +97,7 @@ const Challenges = () => {
   ];
 
   const handleStartChallenge = (challengeId: string) => {
-    // Simulate challenge completion for demo
-    if (!completedChallenges.includes(challengeId)) {
-      setCompletedChallenges([...completedChallenges, challengeId]);
-    }
+    navigate(`/challenges/${challengeId}`);
   };
 
   const totalChallenges = challengeSections.reduce((acc, section) => acc + section.challenges.length, 0);
