@@ -14,7 +14,202 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      achievements: {
+        Row: {
+          created_at: string
+          description: string
+          icon: string | null
+          id: string
+          name: string
+          requirement_value: number | null
+          type: Database["public"]["Enums"]["achievement_type"]
+        }
+        Insert: {
+          created_at?: string
+          description: string
+          icon?: string | null
+          id?: string
+          name: string
+          requirement_value?: number | null
+          type: Database["public"]["Enums"]["achievement_type"]
+        }
+        Update: {
+          created_at?: string
+          description?: string
+          icon?: string | null
+          id?: string
+          name?: string
+          requirement_value?: number | null
+          type?: Database["public"]["Enums"]["achievement_type"]
+        }
+        Relationships: []
+      }
+      challenges: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          description: string
+          difficulty: Database["public"]["Enums"]["difficulty_level"]
+          expected_output: string | null
+          id: string
+          max_score: number | null
+          status: Database["public"]["Enums"]["challenge_status"]
+          tags: string[] | null
+          test_cases: Json | null
+          time_limit: number | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          description: string
+          difficulty: Database["public"]["Enums"]["difficulty_level"]
+          expected_output?: string | null
+          id?: string
+          max_score?: number | null
+          status?: Database["public"]["Enums"]["challenge_status"]
+          tags?: string[] | null
+          test_cases?: Json | null
+          time_limit?: number | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          description?: string
+          difficulty?: Database["public"]["Enums"]["difficulty_level"]
+          expected_output?: string | null
+          id?: string
+          max_score?: number | null
+          status?: Database["public"]["Enums"]["challenge_status"]
+          tags?: string[] | null
+          test_cases?: Json | null
+          time_limit?: number | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          challenges_completed: number | null
+          created_at: string
+          current_streak: number | null
+          display_name: string | null
+          id: string
+          max_streak: number | null
+          total_score: number | null
+          updated_at: string
+          user_id: string
+          username: string | null
+        }
+        Insert: {
+          avatar_url?: string | null
+          challenges_completed?: number | null
+          created_at?: string
+          current_streak?: number | null
+          display_name?: string | null
+          id?: string
+          max_streak?: number | null
+          total_score?: number | null
+          updated_at?: string
+          user_id: string
+          username?: string | null
+        }
+        Update: {
+          avatar_url?: string | null
+          challenges_completed?: number | null
+          created_at?: string
+          current_streak?: number | null
+          display_name?: string | null
+          id?: string
+          max_streak?: number | null
+          total_score?: number | null
+          updated_at?: string
+          user_id?: string
+          username?: string | null
+        }
+        Relationships: []
+      }
+      user_achievements: {
+        Row: {
+          achievement_id: string
+          earned_at: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          achievement_id: string
+          earned_at?: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          achievement_id?: string
+          earned_at?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_achievements_achievement_id_fkey"
+            columns: ["achievement_id"]
+            isOneToOne: false
+            referencedRelation: "achievements"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_challenges: {
+        Row: {
+          attempts: number | null
+          challenge_id: string
+          code_submission: string | null
+          completed: boolean | null
+          created_at: string
+          id: string
+          score: number | null
+          time_taken: number | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          attempts?: number | null
+          challenge_id: string
+          code_submission?: string | null
+          completed?: boolean | null
+          created_at?: string
+          id?: string
+          score?: number | null
+          time_taken?: number | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          attempts?: number | null
+          challenge_id?: string
+          code_submission?: string | null
+          completed?: boolean | null
+          created_at?: string
+          id?: string
+          score?: number | null
+          time_taken?: number | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_challenges_challenge_id_fkey"
+            columns: ["challenge_id"]
+            isOneToOne: false
+            referencedRelation: "challenges"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
@@ -23,7 +218,13 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      achievement_type:
+        | "first_challenge"
+        | "score_milestone"
+        | "streak"
+        | "difficulty_master"
+      challenge_status: "draft" | "published" | "archived"
+      difficulty_level: "easy" | "medium" | "hard"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +351,15 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      achievement_type: [
+        "first_challenge",
+        "score_milestone",
+        "streak",
+        "difficulty_master",
+      ],
+      challenge_status: ["draft", "published", "archived"],
+      difficulty_level: ["easy", "medium", "hard"],
+    },
   },
 } as const
