@@ -1,11 +1,13 @@
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Code2, Menu, X } from "lucide-react";
+import { Code2, Menu, X, LogOut } from "lucide-react";
 import { useState } from "react";
+import { useAuth } from "@/hooks/useAuth";
 
 const Navigation = () => {
   const location = useLocation();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const { user, signOut } = useAuth();
   
   const navItems = [
     { name: "Home", path: "/" },
@@ -45,9 +47,20 @@ const Navigation = () => {
                 {item.name}
               </Link>
             ))}
-            <Button asChild variant="default" className="ml-4 glow-primary">
-              <Link to="/signin">Sign In</Link>
-            </Button>
+            {user ? (
+              <Button 
+                onClick={signOut}
+                variant="outline" 
+                className="ml-4"
+              >
+                <LogOut className="h-4 w-4 mr-2" />
+                Sign Out
+              </Button>
+            ) : (
+              <Button asChild variant="default" className="ml-4 glow-primary">
+                <Link to="/signin">Sign In</Link>
+              </Button>
+            )}
           </div>
 
           {/* Mobile menu button */}
@@ -81,11 +94,25 @@ const Navigation = () => {
               </Link>
             ))}
             <div className="pt-2">
-              <Button asChild variant="default" className="w-full">
-                <Link to="/signin" onClick={() => setIsMobileMenuOpen(false)}>
-                  Sign In
-                </Link>
-              </Button>
+              {user ? (
+                <Button 
+                  onClick={() => {
+                    signOut();
+                    setIsMobileMenuOpen(false);
+                  }}
+                  variant="outline" 
+                  className="w-full"
+                >
+                  <LogOut className="h-4 w-4 mr-2" />
+                  Sign Out
+                </Button>
+              ) : (
+                <Button asChild variant="default" className="w-full">
+                  <Link to="/signin" onClick={() => setIsMobileMenuOpen(false)}>
+                    Sign In
+                  </Link>
+                </Button>
+              )}
             </div>
           </div>
         )}

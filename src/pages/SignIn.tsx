@@ -1,36 +1,64 @@
-import { useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Eye, EyeOff, Github, Chrome, Terminal, Lock, User } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
 
 const SignIn = () => {
   const location = useLocation();
+  const navigate = useNavigate();
+  const { signIn, signUp, user, loading: authLoading } = useAuth();
   const isSignUp = location.pathname === "/signup";
+  
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [username, setUsername] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+
+  // Redirect if already authenticated
+  useEffect(() => {
+    if (user && !authLoading) {
+      navigate('/');
+    }
+  }, [user, authLoading, navigate]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsLoading(true);
     
     if (isSignUp && password !== confirmPassword) {
-      setIsLoading(false);
-      console.log("Passwords don't match");
+      // Handle password mismatch - could add toast here
       return;
     }
     
-    // Simulate authentication
-    setTimeout(() => {
+    setIsLoading(true);
+    
+    try {
+      if (isSignUp) {
+        const { error } = await signUp(email, password, username);
+        if (!error) {
+          // Stay on signup page to show the "check your email" message
+          setEmail("");
+          setPassword("");
+          setConfirmPassword("");
+          setUsername("");
+        }
+      } else {
+        const { error } = await signIn(email, password);
+        if (!error) {
+          navigate('/');
+        }
+      }
+    } catch (error) {
+      console.error('Authentication error:', error);
+    } finally {
       setIsLoading(false);
-      console.log(`${isSignUp ? 'Sign up' : 'Sign in'} attempted with:`, { email, password });
-    }, 2000);
+    }
   };
 
   const handleOAuthSignIn = (provider: string) => {
@@ -80,6 +108,23 @@ const SignIn = () => {
 
         <CardContent className="space-y-6">
           <form onSubmit={handleSubmit} className="space-y-4">
+            {isSignUp && (
+              <div className="space-y-2">
+                <Label htmlFor="username" className="flex items-center gap-2 font-medium">
+                  <User className="h-4 w-4 text-primary" />
+                  Username
+                </Label>
+                <Input
+                  id="username"
+                  type="text"
+                  placeholder="Enter your username"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  className="bg-input/50 border-border/50 focus:border-primary focus:ring-primary/30 transition-all duration-300"
+                />
+              </div>
+            )}
+
             <div className="space-y-2">
               <Label htmlFor="email" className="flex items-center gap-2 font-medium">
                 <User className="h-4 w-4 text-primary" />
