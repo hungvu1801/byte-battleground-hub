@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -8,19 +8,28 @@ import { Separator } from "@/components/ui/separator";
 import { Eye, EyeOff, Github, Chrome, Terminal, Lock, User } from "lucide-react";
 
 const SignIn = () => {
+  const location = useLocation();
+  const isSignUp = location.pathname === "/signup";
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleSignIn = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
+    
+    if (isSignUp && password !== confirmPassword) {
+      setIsLoading(false);
+      console.log("Passwords don't match");
+      return;
+    }
     
     // Simulate authentication
     setTimeout(() => {
       setIsLoading(false);
-      console.log("Sign in attempted with:", { email, password });
+      console.log(`${isSignUp ? 'Sign up' : 'Sign in'} attempted with:`, { email, password });
     }, 2000);
   };
 
@@ -62,15 +71,15 @@ const SignIn = () => {
             </div>
           </div>
           <CardTitle className="text-2xl font-orbitron font-black gradient-text-primary">
-            Access Terminal
+            {isSignUp ? "Join Arena" : "Access Terminal"}
           </CardTitle>
           <CardDescription className="text-muted-foreground">
-            Enter your credentials to join the arena
+            {isSignUp ? "Create your account to start coding" : "Enter your credentials to join the arena"}
           </CardDescription>
         </CardHeader>
 
         <CardContent className="space-y-6">
-          <form onSubmit={handleSignIn} className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="email" className="flex items-center gap-2 font-medium">
                 <User className="h-4 w-4 text-primary" />
@@ -118,7 +127,41 @@ const SignIn = () => {
               </div>
             </div>
 
-            <div className="flex items-center justify-between text-sm">
+            {isSignUp && (
+              <div className="space-y-2">
+                <Label htmlFor="confirmPassword" className="flex items-center gap-2 font-medium">
+                  <Lock className="h-4 w-4 text-primary" />
+                  Confirm Password
+                </Label>
+                <div className="relative">
+                  <Input
+                    id="confirmPassword"
+                    type={showPassword ? "text" : "password"}
+                    placeholder="Confirm your password"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    className="bg-input/50 border-border/50 focus:border-primary focus:ring-primary/30 transition-all duration-300 pr-10"
+                    required={isSignUp}
+                  />
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                    onClick={() => setShowPassword(!showPassword)}
+                  >
+                    {showPassword ? (
+                      <EyeOff className="h-4 w-4 text-muted-foreground" />
+                    ) : (
+                      <Eye className="h-4 w-4 text-muted-foreground" />
+                    )}
+                  </Button>
+                </div>
+              </div>
+            )}
+
+            {!isSignUp && (
+              <div className="flex items-center justify-between text-sm">
               <label className="flex items-center space-x-2 cursor-pointer">
                 <input type="checkbox" className="w-4 h-4 accent-primary" />
                 <span className="text-muted-foreground">Remember me</span>
@@ -130,6 +173,7 @@ const SignIn = () => {
                 Forgot password?
               </Link>
             </div>
+            )}
 
             <Button 
               type="submit" 
@@ -142,7 +186,7 @@ const SignIn = () => {
                   Authenticating...
                 </div>
               ) : (
-                "Access Granted"
+                isSignUp ? "Create Account" : "Access Granted"
               )}
             </Button>
           </form>
@@ -178,12 +222,12 @@ const SignIn = () => {
           </div>
 
           <div className="text-center text-sm text-muted-foreground">
-            New to CodeArena?{" "}
+            {isSignUp ? "Already have an account?" : "New to CodeArena?"}{" "}
             <Link 
-              to="/signup" 
+              to={isSignUp ? "/signin" : "/signup"} 
               className="text-secondary hover:text-secondary/80 transition-colors font-medium"
             >
-              Create an account
+              {isSignUp ? "Sign in" : "Create an account"}
             </Link>
           </div>
 
@@ -191,7 +235,7 @@ const SignIn = () => {
           <div className="pt-4 border-t border-border/30">
             <div className="font-mono text-xs text-muted-foreground/70 space-y-1">
               <div>$ connection secured with 256-bit encryption</div>
-              <div>$ logged from terminal: /dev/signin</div>
+              <div>$ logged from terminal: /dev/{isSignUp ? 'signup' : 'signin'}</div>
               <div className="text-secondary">$ status: ready for authentication</div>
             </div>
           </div>
